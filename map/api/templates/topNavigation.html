@@ -1,0 +1,92 @@
+{% load static %}
+<header>
+    <!-- Intro settings -->
+    <style>
+        #intro {
+            /* Margin to fix overlapping fixed navbar */
+            margin-top: 0x;
+        }
+        
+        @media (max-width: 991px) {
+            #intro {
+                /* Margin to fix overlapping fixed navbar */
+                margin-top: 0px;
+            }
+        }
+    </style>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-gradient fixed-top shadow border-bottom">
+        <div class="container">
+            <!-- Navbar brand -->
+            <a class="navbar-brand" target="_blank" href="{% url 'home-page' %}">
+                <img src="{% static 'assets/default/media/l.png' %}" height="16" alt="logo" loading="lazy" class="bg-white bg-gradient px-1 py-1" style="margin-top: -3px;" />
+            </a>
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01" aria-controls="navbarExample01" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i>
+    </button>
+            <div class="collapse navbar-collapse" id="navbarExample01">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="topNav">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'home-page' %}">Home</a>
+                    </li>
+                    {% if not user.id %}
+   
+                    {% endif %}
+                    {% if user.id %}
+                  
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'location-page' %}">Trip Locations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'bus-page' %}">Buses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'schedule-page' %}">Trip Schedules</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'booking-page' %}">Booking</a> 
+                    </li>
+                  
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'register-admin' %}">add_admin</a> 
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav d-flex flex-row">
+                    {% if user.id %} {% if user.profile.user_type == 1 %} {% endif %}
+                    <li class="nav-item me-3 me-lg-0">
+                        <a class="nav-link" href="{% url 'profile' %}">
+                            <span class="me-1"><img src="{% static 'assets/default/media/default-avatar.png' %}" alt="User Avatar" id="user-avatar" class="img-thumbnail rounded-circle"></span>{{ user.first_name }} {{user.last_name}}
+                        </a>
+                    </li>
+                    <li class="nav-item me-3 me-lg-0">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item me-3 me-lg-0">
+                        <a class="nav-link" href="{% url 'register-user' %}">sign up</a>
+                    </li>
+                    {% endif %}
+                   
+                    <li class="nav-item me-3 me-lg-0">
+                        <a class="nav-link" href="{% url 'contact' %}">contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar -->
+    <div id="intro" class="pt-2 text-center bg-light">
+    </div>
+</header>
+<script>
+    $(function() {
+        $('#topNav .nav-link').each(function() {
+            var current = '{{ request.get_full_path | urlencode }}'
+            if (current == $(this).attr('href')) {
+                $(this).parent().addClass('active')
+            }
+        })
+    })
+</script>

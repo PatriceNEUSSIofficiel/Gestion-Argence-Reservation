@@ -1,0 +1,80 @@
+{% extends 'bas.html' %}{% load static %} {% load customfilter %}
+
+{% block pageContent %}
+<style>
+
+  .contact-wrap {
+    background-color: #f8f9fa;
+    padding: 40px;
+    border-radius: 5px;
+    width: 400px;
+    margin-left: 450px;
+  }
+
+  .label {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .form-control {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+</br></br></br>
+<div class="contact-wrap">
+  <h2 style="text-align: center;">Payement du Ticket</h2></br></br>
+  <form id="contact-form">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" class="form-control" required placeholder="patriceneussi@gmail.com">
+    </div>
+    <div class="form-group">
+      <label for="amount">Montant</label>
+      <input type="number" id="amount" name="amount" class="form-control" required placeholder="5000">
+    </div>
+    <div id="paypal-button-container"></div>
+  </form>
+
+<script src="https://www.paypal.com/sdk/js?client-id=AcNbVv3KcwH-8iHOTcS6QhmreFv5LbjbRh7KSkitAk9wofnK5P8tgGfU5otuqPFyIzjyOBND98gPnAU5&currency=USD"></script>
+<script>
+  paypal.Buttons({
+    createOrder: function(data, actions) {
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: document.getElementById('amount').value
+          }
+        }]
+      });
+    },
+    onApprove: function(data, actions) {
+      return actions.order.capture().then(function(details) {
+        // Insérez ici le code pour traiter le paiement réussi
+        location.href = "{% url 'home-page' %}"
+        alert('Paiement effectué avec succès !');
+
+      });
+    }
+  }).render('#paypal-button-container');
+</script>
+{% endblock pageContent %}
+

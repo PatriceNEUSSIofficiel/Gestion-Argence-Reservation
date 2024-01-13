@@ -1,0 +1,146 @@
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  header {
+    background-color: #1B3E83;
+    color: #E4E7ED;
+    padding: 10px;
+    height: 200px;
+    text-align: center;
+  }
+  
+  .logo {
+    float: left;
+    margin-left: 10px;
+    width: 150px;
+    height: 150px;
+  }
+  
+  .user-info {
+    float: right;
+    margin-right: 20px;
+    padding: 0px;
+    margin-bottom: 20px;
+  }
+  
+  .user_icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 40px;
+  }
+  
+  header h1 {
+    margin: 0;
+  }
+  
+  main {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hi {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    color: #E4E7ED;
+  }
+  
+  #map {
+    height: 500px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .location-details {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 30px;
+    width: 100%;
+  }
+  
+  .location-details h2 {
+    margin-top: 0;
+  }
+  
+  footer {
+    background-color: #1B3E83;
+    color: #fff;
+    height: 60px;
+    padding: 0px;
+    text-align: center;
+  }
+  
+  footer p {
+    margin: 0;
+  }
+  
+  .btn-geolocate {
+    display: inline;
+    font-size: 32px;
+    display: center;
+    width: 500px;
+    padding: 10px 30px;
+    margin: 10px;
+    background-color: #1B3E83;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .btn-geolocate:hover {
+    background-color: #45a049;
+  }
+  
+  /* Media Queries */
+  
+  @media (max-width: 768px) {
+    .container {
+      padding: 10px;
+    }
+
+    header {
+        background-color: #1B3E83;
+        color: #E4E7ED;
+        padding: 10px;
+        height: 340px;
+        text-align: center;
+      }
+  
+    .logo {
+      margin-left: 55px;
+      margin-bottom: 0px;
+    }
+  
+    .user-info {
+      float: none;
+      margin-right: 0;
+      text-align: center;
+    }
+  
+    .user_icon {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+  
+    main {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+  
+    #map {
+      height: 300px;
+    }
+  
+    .btn-geolocate {
+      width: 100%;
+      font-size: 24px;
+      padding: 10px 20px;
+    }
+  }

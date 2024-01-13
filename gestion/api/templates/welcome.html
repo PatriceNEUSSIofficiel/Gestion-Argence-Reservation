@@ -1,0 +1,95 @@
+{% extends 'base.html' %}{% load static %} {% load customfilter %}
+
+{% block pageContent %}
+    <style>
+        body {
+            background-color: white;
+        }
+        .logo {
+            float: left;
+            margin-top: 5px;
+            margin-left: 40px;
+            width: 200px;
+            height: 200px;
+        }
+        .user-info {
+            float: right;
+            margin-top: 10px;
+            margin-right: 40px;
+            
+        }
+        .user_icon{
+            margin-top: 20px;
+            width: 100px;
+            height: 100px;
+            margin-right: 40px;
+        }
+
+        .center-container {
+            text-align: center;
+        }
+        
+        .ipcon {
+            display: inline-block; 
+            animation: floatingLogo 5s infinite;
+            width:450px;
+            height:250px;
+
+        }
+
+        @keyframes floatingLogo {
+            10% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-50px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        .welcome-message {
+            text-align: center;
+            font-size: 50px;
+            margin-top: 50px;
+        }
+        .name{
+            color:blue;
+            text-align: center;
+            font-size: 40px;
+        }
+        .city{
+            color:orange;
+            text-align: center;
+            font-size: 20px;
+        }
+        .start-button {
+            display: block;
+            width: 400px;
+            height: 100px;
+            margin: 30px auto;
+            background-color: blue;
+            color: white;
+            text-align: center;
+            line-height: 100px;
+            text-decoration: none;
+            border-radius:50px;
+        }
+        .footer {
+            text-align: center;
+            color: black;
+            padding: 10px;
+        }
+    </style>
+    <br><br><br><br>
+
+    <div class="center-container">
+        <img class="ipcon" src="{% static 'assets/default/media/logo.png' %}" alt="" id="logo-img">
+    </div>
+    <div class="welcome-message">
+        <p>WELCOME <span class="name">{{user.last_name}}</span> </p>
+        <p class="city">For Urban_Transport App</p>
+    </div>
+    <a href="/costumer_home" class="start-button">Commencer</a>
+   
+{% endblock pageContent %}    

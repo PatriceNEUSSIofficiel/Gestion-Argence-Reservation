@@ -1,0 +1,10 @@
+Django==4.0.3
+Pillow
+cryptography
+more-itertools
+mysqlclient
+reportlab
+requests
+python-decouple
+config
+djangorestframework

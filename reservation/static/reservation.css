@@ -1,0 +1,106 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+body {
+    margin: 0;
+    font-family: var(--bs-body-font-family);
+    font-size: var(--bs-body-font-size);
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
+    color: var(--bs-body-color);
+    text-align: var(--bs-body-text-align);
+    background-color: var(--bs-body-bg);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+.container {
+    border: 2px solid #edeff1; /* Couleur de la bordure */
+    border-radius: 10px; /* Coins arrondis */
+    padding: 200px; /* Ajoutez de la marge à l'intérieur du conteneur */
+}
+
+
+/* Ajoutez de l'ombre pour donner une sensation de profondeur */
+.shadow-lg {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Style pour les étapes actives du formulaire */
+.form-step-active {
+    /*border: 4px solid #007bff;*/
+    padding: 100px;
+    border-radius: 550px;
+    width: 25%;
+    flex: 0 0 auto;
+}
+
+.container {
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 70px;
+    width: 40%;
+}
+
+h5 {
+    font-size: 18px;
+    color: #007bff;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 25px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 55px;
+    box-sizing: border-box;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.font-red {
+    color: #ff0000;
+}
+
+/* Ajoutez d'autres styles au besoin */
+
+
+/* Ajouter un peu de marge en bas pour éviter que le formulaire ne touche le bord inférieur de l'écran */
+

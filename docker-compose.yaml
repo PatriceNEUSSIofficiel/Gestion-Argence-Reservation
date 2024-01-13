@@ -1,0 +1,44 @@
+version: '3.3'
+
+services:
+  gestion_app:
+    build: ./gestion
+    command: bash -c "python3 ./gestion/manage.py makemigrations && python3 ./gestion/manage.py migrate && python3 ./gestion/manage.py runserver 0.0.0.0:8001"
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    restart: always
+    environment:
+      - DATABASE_URL=sqlite:///app/db.sqlite3
+
+  map_app:
+    build: ./map
+    command: bash -c "python3 ./map/manage.py makemigrations && python3 ./map/manage.py migrate && python3 ./map/manage.py runserver 0.0.0.0:8002"
+    volumes:
+      - .:/app
+    ports:
+      - "8002:8002"
+    restart: always
+    environment:
+      - DATABASE_URL=sqlite:///app/db.sqlite3
+
+  reservation_app:
+    build: ./reservation
+    command: bash -c "python3 ./reservation/manage.py makemigrations && python3 ./reservation/manage.py migrate && python3 ./reservation/manage.py runserver 0.0.0.0:8003"
+    volumes:
+      - .:/app
+    ports:
+      - "8003:8003"
+    restart: always
+    environment:
+      - DATABASE_URL=sqlite:///app/db.sqlite3
+
+  nginx:
+    build: ./conf
+    ports:
+      - 5000:5000
+    depends_on:
+      - gestion_app
+      - map_app
+      - reservation_app

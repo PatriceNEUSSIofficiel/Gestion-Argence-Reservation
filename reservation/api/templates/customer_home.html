@@ -1,0 +1,111 @@
+{% extends 'bas.html' %}{% load static %} {% load customfilter %}
+
+{% block pageContent %}
+    <style>
+        
+        .logo {
+            float: left;
+            margin-top: 5px;
+            margin-left: 40px;
+            width: 200px;
+            height: 200px;
+        }
+
+        .center-container {
+            text-align: center;
+        }
+        
+        .ipcon {
+            display: inline-block; 
+            animation: floatingLogo 5s infinite;
+            width:450px;
+            height:250px;
+
+        }
+
+        @keyframes floatingLogo {
+            10% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-50px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        
+        .start-button {
+            display: block;
+            width: 400px;
+            height: 100px;
+            margin: 30px auto;
+            background-color: blue;
+            color: white;
+            text-align: center;
+            line-height: 100px;
+            text-decoration: none;
+            border-radius:50px;
+        }
+        
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        border: 1px solid #3498db; /* Couleur de bordure bleue */
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #3498db; /* Couleur de fond bleue pour les en-têtes */
+        color: white;
+    }
+
+    tbody tr:hover {
+        background-color: #ecf0f1; /* Couleur de fond gris clair au survol */
+    }
+    </style>
+    <br><br><br><br>
+
+    <div class="center-container">
+       <img src="{% static 'assets/default/media/tic.png' %}" alt="" id="logo-img">
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Bus</th>
+                    <th>Départ</th>
+                    <th>Destination</th>
+                    <th>Schedule</th>
+                    <th>Fare</th>
+                    <th>Status</th>
+                    <th>Date de création</th>
+                    <th>Date de mise à jour</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                    <tr>
+                        <td>{{ schedule.code }}</td>
+                        <td>{{ schedule.bus }}</td>
+                        <td>{{ schedule.depart }}</td>
+                        <td>{{ schedule.destination }}</td>
+                        <td>{{ schedule.schedule }}</td>
+                        <td>{{ schedule.fare }}</td>
+                        <td>{{ schedule.get_status_display }}</td>
+                        <td>{{ schedule.date_created }}</td>
+                        <td>{{ schedule.date_updated }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="/formulaire2" class="start-button">RESERVER</a>
+   
+{% endblock pageContent %}    

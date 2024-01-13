@@ -1,0 +1,252 @@
+{% extends 'bas.html' %}{% load static %} {% load customfilter %}
+{% block pageContent %}
+  <style>
+    #map-route {
+      height: 400px;
+      width: 100%;
+    }
+    .directions-table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+      
+      .directions-table th,
+      .directions-table td {
+        border: 1px solid blue;
+        padding: 8px;
+        text-align: left;
+      }
+      
+      .directions-table th {
+        background-color: blue;
+        color: white;
+      }
+      .directions-form {
+        margin-top: 10%;
+        border: 1px solid blue;
+        padding: 10px;
+        border-radius: 10px;
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 5%;
+      }
+      
+      .input-field {
+        border: 2px solid gray;
+        border-radius: 5px;
+        padding: 8px;
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      .submit-button {
+        background-color: blue;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+      
+      .submit-button:hover {
+        background-color: darkblue;
+      }
+  </style>
+  <h1 style="text-align: center; margin-top: 50px;">VISUALISATION OF ITINARY</h1>
+  <div class="container">
+    <form id="directions-form" class="directions-form">
+        <label for="start">Point de départ:</label>
+        <input type="text" id="start" name="start" placeholder="Entrez le point de départ" autocomplete="off" class="input-field">
+        <ul id="start-suggestions" class="suggestions"></ul>
+        <br>
+        <label for="destination">Point d'arrivée:</label>
+        <input type="text" id="destination" name="destination" placeholder="Entrez le point d'arrivée" autocomplete="off" class="input-field">
+        <ul id="destination-suggestions" class="suggestions"></ul>
+        <br>
+        <input type="submit" value="Obtenir l'itinéraire" class="submit-button">
+      </form>
+    <table id="directions-table" class="directions-table">
+        <thead>
+          <tr>
+            <th>Directions</th>
+            <th>Distance</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody id="directions-body"></tbody>
+    </table>
+    <br>
+    <div id="map-route"></div>
+    <br>
+  </div>
+
+  <script>
+
+    function initMap() {
+        var directionsService = new google.maps.DirectionsService();
+        var directionsRenderer = new google.maps.DirectionsRenderer();
+        var map = new google.maps.Map(document.getElementById('map-route'), {
+          zoom: 7,
+          center: { lat: 5.75, lng: 12.0 }
+        });
+        directionsRenderer.setMap(map);
+      
+        var directionsForm = document.getElementById('directions-form');
+        directionsForm.addEventListener('submit', function(event) {
+          event.preventDefault();
+          var startInput = document.getElementById('start');
+          var destinationInput = document.getElementById('destination');
+          var startAddress = startInput.value;
+          var destinationAddress = destinationInput.value;
+      
+          calculateAndDisplayRoute(directionsService, directionsRenderer, startAddress, destinationAddress);
+        });
+      
+        var startInput = document.getElementById('start');
+        var destinationInput = document.getElementById('destination');
+      
+        var autocompleteStart = new google.maps.places.Autocomplete(startInput, { types: ['(cities)'] });
+        var autocompleteDestination = new google.maps.places.Autocomplete(destinationInput, { types: ['(cities)'] });
+      }
+
+    function calculateAndDisplayRoute(directionsService, directionsRenderer, startAddress, destinationAddress) {
+      directionsService.route(
+        {
+          origin: startAddress,
+          destination: destinationAddress,
+          travelMode: 'DRIVING'
+        },
+        function(response, status) {
+          if (status === 'OK') {
+            directionsRenderer.setDirections(response);
+            var route = response.routes[0];
+            var steps = [];
+            var totalDistance = 0;
+            var totalDuration = 0;
+
+            for (var i = 0; i < route.legs.length; i++) {
+              var leg = route.legs[i];
+
+              steps.push({
+                dist: leg.distance.text,
+                dur: leg.duration.text,
+                text: leg.instructions
+              });
+
+              totalDistance += leg.distance.value;
+              totalDuration += leg.duration.value;
+            }
+
+            var directionsData = {
+              origin: startAddress,
+              destination: destinationAddress,
+              duration: formatDuration(totalDuration),
+              distance: formatDistance(totalDistance),
+              steps: steps
+            };
+
+            displayDirectionsData(directionsData);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        }
+      );
+    }
+
+    function formatDistance(distance) {
+      if (distance >= 1000) {
+        return (distance / 1000).toFixed(1) + ' km';
+      } else {
+        return distance + ' m';
+      }
+    }
+
+    function formatDuration(duration) {
+      var hours = Math.floor(duration / 3600);
+      var minutes = Math.floor((duration % 3600) / 60);
+
+      if (hours > 0) {
+        return hours + ' h ' + minutes + ' min';
+      } else {
+        return minutes + ' min';
+      }
+    }
+
+    function displayDirectionsData(directionsData) {
+      var directionsTable = document.getElementById('directions-table');
+      var directionsBody = document.getElementById('directions-body');
+      directionsBody.innerHTML = '';
+
+      for (var i = 0; i < directionsData.steps.length; i++) {
+        var step = directionsData.steps[i];
+
+        var row = document.createElement('tr');
+        var instructionsCell = document.createElement('td');
+        var distanceCell = document.createElement('td');
+        var durationCell = document.createElement('td');
+
+        instructionsCell.textContent = step.text;
+        distanceCell.textContent = step.dist;
+        durationCell.textContent = step.dur;
+
+        row.appendChild(instructionsCell);
+        row.appendChild(distanceCell);
+        row.appendChild(durationCell);
+
+        directionsBody.appendChild(row);
+      }
+
+      directionsTable.hidden = false;
+    }
+
+    function showSuggestions(input, suggestionsId) {
+      var suggestionsList = document.getElementById(suggestionsId);
+      suggestionsList.innerHTML = '';
+
+      if (input.length === 0) {
+        return;
+      }
+
+      var suggestions = getMatchingCities(input);
+
+      for (var i = 0; i < suggestions.length; i++) {
+        var suggestion = suggestions[i];
+        var suggestionItem = document.createElement('li');
+        suggestionItem.textContent = suggestion;
+        suggestionItem.addEventListener('click', function() {
+          setInputValue(this.textContent, suggestionsId);
+        });
+
+        suggestionsList.appendChild(suggestionItem);
+      }
+    }
+
+    function setInputValue(value, inputId) {
+      var input = document.getElementById(inputId.replace('-suggestions', ''));
+      input.value = value;
+      document.getElementById(inputId).innerHTML = '';
+    }
+
+    function getMatchingCities(input) {
+      var cities = [
+        // Liste complète des villes du Cameroun
+        // Ajoutez ici toutes les villes du Cameroun
+      ];
+      
+      var matchingCities = [];
+
+      for (var i = 0; i < cities.length; i++) {
+        var city = cities[i];
+        if (city.toLowerCase().startsWith(input.toLowerCase())) {
+          matchingCities.push(city);
+        }
+      }
+
+      return matchingCities;
+    }
+    
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_o9DCqv45LBSrHjPHX0Py0-O0Wt4PuTc&callback=initMap" async defer></script>
+{% endblock pageContent %}
+

@@ -1,0 +1,139 @@
+{% extends 'bas.html' %} {% load static %}
+<!doctype html>
+{% block pageContent %}
+
+	<style>.
+		container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 20px;
+	  }
+	  
+	  .hi {
+		font-size: 24px;
+		text-align: center;
+	  }
+	  
+	  #map {
+		height: 400px;
+		width: 500px
+		margin-bottom: 20px;
+	  }
+	  
+	  .btn-geolocate {
+		background-color: #007bff;
+		color: #fff;
+		border: none;
+		padding: 10px 20px;
+		font-size: 16px;
+		cursor: pointer;
+	  }
+	  
+	  .location-details {
+		background-color: #f8f8f8;
+		border: 1px solid #ccc;
+		padding: 20px;
+		margin-top: 20px;
+	  }
+	  
+	  .location-details h2 {
+		font-size: 20px;
+		margin-bottom: 10px;
+	  }
+	  
+	  .location-details p {
+		margin: 5px 0;
+	  }
+	</style>
+	<div class="container">
+		<main >
+			<div class="container">
+			<br> <br> <br>
+			<h1 class="hi" style="color: #050505;"> MA LOCALISATION ACTUELLE</h1>
+			<div id="map"></div>
+			<button class="btn-geolocate" onclick="getCurrentLocation()">Obtenir ma position</button>
+			<div class="location-details">
+				<h2>Informations sur votre position actuelle :</h2>
+				<p><strong>Quartier :</strong> <span id="neighborhood"></span></p>
+				<p><strong>Latitude :</strong> <span id="latitude"></span></p>
+				<p><strong>Longitude :</strong> <span id="longitude"></span></p>
+				<p><strong>Adresse :</strong> <span id="address"></span></p>
+			</div>
+			</div>
+		</main>
+		</div>
+		
+		<script>
+		function initMap() {
+			var map = new google.maps.Map(document.getElementById('map'), {
+			center: { lat: 3.848, lng: 11.502 },
+			zoom: 12
+			});
+		}
+		
+		function getCurrentLocation() {
+			if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function (position) {
+				var pos = {
+				lat: position.coords.latitude,
+				lng: position.coords.longitude
+				};
+		
+				var map = new google.maps.Map(document.getElementById('map'), {
+				center: pos,
+				zoom: 16
+				});
+		
+				var marker = new google.maps.Marker({
+				position: pos,
+				map: map,
+				title: 'Votre position actuelle'
+				});
+		
+				var geocoder = new google.maps.Geocoder();
+				geocoder.geocode({ 'location': pos }, function (results, status) {
+				if (status=== 'OK') {
+					if (results[0]) {
+					var neighborhood = getNeighborhood(results[0]);
+					var address = results[0].formatted_address;
+		
+					document.getElementById('neighborhood').textContent = neighborhood;
+					document.getElementById('latitude').textContent = pos.lat.toFixed(6);
+					document.getElementById('longitude').textContent = pos.lng.toFixed(6);
+					document.getElementById('address').textContent = address;
+					}
+				}
+				});
+			}, function () {
+				handleLocationError(true);
+			});
+			} else {
+			handleLocationError(false);
+			}
+		}
+		
+		function getNeighborhood(geocodeResult) {
+			var neighborhood = '';
+			for (var i = 0; i < geocodeResult.address_components.length; i++) {
+			var addressComponent = geocodeResult.address_components[i];
+			if (addressComponent.types.includes('neighborhood')) {
+				neighborhood = addressComponent.long_name;
+				break;
+			}
+			}
+			return neighborhood;
+		}
+		
+		function handleLocationError(browserHasGeolocation) {
+			var errorContainer = document.createElement('div');
+			errorContainer.textContent = browserHasGeolocation ? 'Erreur : Le service de géolocalisation a échoué.' : 'Erreur : Votre navigateur ne supporte pas la géolocalisation.';
+			document.body.appendChild(errorContainer);
+		}
+		</script>
+		
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_o9DCqv45LBSrHjPHX0Py0-O0Wt4PuTc&callback=initMap" async defer></script>
+	
+	</div>
+
+<script src="{% static 'main.js' %}"></script>
+{% endblock pageContent %}

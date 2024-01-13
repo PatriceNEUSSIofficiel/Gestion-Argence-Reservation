@@ -1,0 +1,4 @@
+{
+    "DockerRun.DisableAutoGenerateConfig": true,
+    "python.pythonPath": "bus_env/bin/python3.8"
+}

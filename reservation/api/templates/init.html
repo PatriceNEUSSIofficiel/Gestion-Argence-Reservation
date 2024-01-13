@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Page d'accueil</title>
+    <style>
+        body {
+            background-color: white;
+        }
+        .logo {
+            text-align: center;
+            font-size: 60px;
+            animation: floatingLogo 5s infinite;
+        }
+        .footer {
+            text-align: center;
+            font-size: 30px;
+        }
+        
+        @keyframes floatingLogo {
+            10% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-50px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    </br></br></br></br> </br></br></br></br>
+    <div class="logo">
+        <center>
+            <img class="ipcon" src="{% static 'assets/default/media/l.png' %}" alt="" id="logo-img">
+        </center>
+    </div>
+    <div class="footer">
+        <p>Urban_Transport</p>
+        <p>@Copyright Propenta</p>
+    </div>
+    <script>
+        setTimeout(function() {
+            window.location.href ='/login';
+        }, 2000);
+    </script>
+</body>
+</html>

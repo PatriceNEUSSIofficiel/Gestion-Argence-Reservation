@@ -1,0 +1,94 @@
+{% extends 'bas.html' %}{% load static %} {% load customfilter %}
+{% block pageContent %}
+<style>
+    .center-container {
+        text-align: center;
+    }
+    
+    .ipcon {
+        display: inline-block; 
+        animation: floatingLogo 5s infinite;
+        width:300px;
+        height:150px;
+
+    }
+
+    
+</style>
+<h1 style="text-align: center; margin-top: 50px;">RESERVEZ VOTRE PLACE</h1>
+</br></br>
+<div class="center-container">
+    <img class="ipcon" src="{% static 'assets/default/media/ticket.png' %}" alt="" id="logo-img">
+ </div>
+<div class="container shadow-lg p-3 mb-5 bg-body-tertiary rounded" id="cont" style="margin-top: 100px; width: 700px;">
+    <form  action="{% url 'formulaire2' %}" method="POST" id="Formulaire" name="Formulaire" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="page111 form-step form-step-active">
+            <div class="mb-3">
+            </br>
+                <h5><b>INFORMATIONS PERSONELLES</b></h5>
+            </br>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">name:</label>
+                        <input type="text" class="form-control" name="nom" id="nom" value="" placeholder="Votre Nom d utilisateur" required>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label" for="schedule">Schedule:</label>
+                        <select class="form-select" name="schedule" id="schedule" required>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary btnn-next">submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Récupère la liste déroulante 'schedule'
+        const scheduleSelect = document.getElementById('schedule');
+
+        // Charge les horaires depuis le serveur Django avec AJAX
+        fetch('/get_schedules/')
+            .then(response => response.json())
+            .then(data => {
+                // Ajoute chaque horaire comme une option à la liste déroulante
+                data.forEach(schedule => {
+                    const option = document.createElement('option');
+                    option.value = schedule.id;
+                    option.text = `${schedule.depart}-${schedule.destination}- ${schedule.schedule}`;
+                    option.setAttribute('data-depart', schedule.depart);
+                    option.setAttribute('data-destination', schedule.destination);
+                    option.setAttribute('data-schedule', schedule.schedule);
+                    scheduleSelect.add(option);
+                });
+            })
+            .catch(error => console.error('Error fetching schedules:', error));
+
+        // Écoute l'événement de changement de valeur dans la liste déroulante
+        scheduleSelect.addEventListener('change', function() {
+            // Récupère l'option sélectionnée
+            const selectedOption = scheduleSelect.options[scheduleSelect.selectedIndex];
+
+            // Récupère les valeurs des champs de l'objet "schedule"
+            const scheduleId = selectedOption.value;
+            const scheduleDepart = selectedOption.getAttribute('data-depart');
+            const scheduleDestination = selectedOption.getAttribute('data-destination');
+            const scheduleTime = selectedOption.getAttribute('data-schedule');
+
+            // Affiche les valeurs dans la console
+            console.log('ID du schedule:', scheduleId);
+            console.log('Départ:', scheduleDepart);
+            console.log('Destination:', scheduleDestination);
+            console.log('Horaire:', scheduleTime);
+        });
+    });
+</script>
+{% endblock pageContent %}
