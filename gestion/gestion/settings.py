@@ -141,3 +141,10 @@ GOOGLE_API_KEY = "AIzaSyC_o9DCqv45LBSrHjPHX0Py0-O0Wt4PuTc"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}

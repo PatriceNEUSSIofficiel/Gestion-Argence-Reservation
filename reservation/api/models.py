@@ -44,18 +44,19 @@ class Bus(models.Model):
         return self.bus_number
 
 class Schedule(models.Model):
-    code = models.CharField(max_length=100)
-    bus = models.ForeignKey(Bus,on_delete=models.CASCADE)
-    depart = models.ForeignKey(Location,on_delete=models.CASCADE, related_name='depart_location')
-    destination = models.ForeignKey(Location,on_delete=models.CASCADE, related_name='destination')
-    schedule= models.DateTimeField()
-    fare= models.FloatField()
-    status = models.CharField(max_length=2, choices=(('1','Active'),('2','Cancelled')), default=1)
-    date_created = models.DateTimeField(default=timezone.now)
-    date_updated = models.DateTimeField(auto_now=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    bus = models.ForeignKey(Bus,on_delete=models.CASCADE, null=True, blank=True)
+    depart = models.ForeignKey(Location,on_delete=models.CASCADE, related_name='depart_location', null=True, blank=True)
+    destination = models.ForeignKey(Location,on_delete=models.CASCADE, related_name='destination', null=True, blank=True)
+    schedule= models.DateTimeField(null=True, blank=True)
+    fare= models.FloatField(null=True, blank=True)
+    status = models.CharField(max_length=2, choices=(('1','Active'),('2','Cancelled')), default=1, null=True, blank=True)
+    date_created = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    date_updated = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
-        return str(self.code + ' - ' + self.bus.bus_number)
+        # return str(self.code + ' - ' + self.bus.bus_number) 
+        return self.code
 
 
 
