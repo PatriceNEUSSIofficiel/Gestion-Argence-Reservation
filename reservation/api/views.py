@@ -288,7 +288,7 @@ def save_location(request):
         else:
             location = None
         if location is None:
-            form = SaveLocation(request.POST)
+            form = SaveLocation(request.POST) 
         else:
             form = SaveLocation(request.POST, instance= location)
         if form.is_valid():
