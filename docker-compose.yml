@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  msgestion:
+    build: 
+      context: ./gestion
+    ports:
+      - "8001:8001"
+    networks:
+      - npenetwork
+
+  msmap:
+    build: 
+      context: ./map
+    ports:
+      - "8002:8002"
+    networks:
+      - npenetwork
+
+  msreservation:
+    build: 
+      context: ./reservation
+    ports:
+      - "8003:8003"
+    networks:
+      - npenetwork
+
+  nginx:
+    build: ./conf
+    ports:
+      - 5000:5000
+    depends_on:
+      - msgestion
+      - msmap
+      - msreservation
+
+networks:
+  npenetwork:

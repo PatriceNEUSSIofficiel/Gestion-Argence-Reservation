@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-gv!+b5db8^ps4@=81)v#$57vp#vw2)_8d*l!cz!vdd)idz)s_1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -155,3 +155,12 @@ GOOGLE_API_KEY = "AIzaSyC_o9DCqv45LBSrHjPHX0Py0-O0Wt4PuTc"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}

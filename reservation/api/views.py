@@ -288,7 +288,7 @@ def save_location(request):
         else:
             location = None
         if location is None:
-            form = SaveLocation(request.POST)
+            form = SaveLocation(request.POST) 
         else:
             form = SaveLocation(request.POST, instance= location)
         if form.is_valid():
@@ -452,24 +452,35 @@ def manage_schedule(request, pk=None):
 import json
 
 def schedule_list(request):
-    
-    url = "http://gestion_app:8001/api/schedule/"
-    
-    # reponse = requests.get(url)
-    
-    # dataToSave = reponse.json() 
-    
-    # shedul = Schedule(dataToSave)
-    # shedul.save()
-    response = requests.get(url)
-    dataToSave = response.json()
-    for elt in dataToSave:
 
-        tmp = Schedule(code=elt['code'],bus=elt['bus'], depart=elt['depart'], destination=elt['destination'], schedule=elt['schedule'], fare=elt['fare'], status=elt['status'])
-        tmp.save()
+
+    url = 'http://msgestion:8001/api/schedule/'
     
+    reponse = requests.get(url)
+    print("Response ==> ",reponse)
+    dataToSave = reponse.json() 
+    print('------------------------')
+    print(dataToSave)
+    print(".......................")
+    for elt in dataToSave:
+        if Bus.objects.filter(bus_number=elt['bus']).exists():
+            pass
+        else:
+            Bus.objects.create(bus_number=elt['bus'], status=elt['status'])
+        if Location.objects.filter(location=elt['depart']).exists():
+            pass
+        else:
+            Location.objects.create(location=elt['depart'])
+        
+        if Schedule.objects.filter(code=elt['code']).exists():
+            pass
+        else:
+                
+            Schedule.objects.create(code=elt['code'], schedule=elt['schedule'], fare=elt['fare'], bus=Bus.objects.get(bus_number=elt['bus']), depart=Location.objects.get(location=elt['depart']), destination=Location.objects.get(location=elt['depart']))
+        
     schedules = Schedule.objects.all()
     return render(request, 'customer_home.html', {'schedules': schedules})
+    
 
 
 
