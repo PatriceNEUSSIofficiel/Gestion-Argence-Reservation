@@ -453,37 +453,34 @@ import json
 
 def schedule_list(request):
 
-    try:
 
-        url = 'http://localhost:8001/api/schedule/'
-        
-        reponse = requests.get(url)
-
-        dataToSave = reponse.json() 
-        print(dataToSave)
-        for elt in dataToSave:
-            if Bus.objects.filter(bus_number=elt['bus']).exists():
-                pass
-            else:
-                Bus.objects.create(bus_number=elt['bus'], status=elt['status'])
-
-            if Location.objects.filter(location=elt['depart']).exists():
-                pass
-            else:
-                Location.objects.create(location=elt['depart'])
-            
-            if Schedule.objects.filter(code=elt['code']).exists():
-                pass
-            else:
-                
-                Schedule.objects.create(code=elt['code'], schedule=elt['schedule'], fare=elt['fare'], bus=Bus.objects.get(bus_number=elt['bus']), depart=Location.objects.get(location=elt['depart']), destination=Location.objects.get(location=elt['depart']))
-        
-        schedules = Schedule.objects.all()
-        return render(request, 'customer_home.html', {'schedules': schedules})
+    url = 'http://msgestion:8001/api/schedule/'
     
-    except:
-        # return render(request, 'customer_home.html', {'schedules': 'schedules'})
-        return HttpResponse("ERREUR")
+    reponse = requests.get(url)
+    print("Response ==> ",reponse)
+    dataToSave = reponse.json() 
+    print('------------------------')
+    print(dataToSave)
+    print(".......................")
+    for elt in dataToSave:
+        if Bus.objects.filter(bus_number=elt['bus']).exists():
+            pass
+        else:
+            Bus.objects.create(bus_number=elt['bus'], status=elt['status'])
+        if Location.objects.filter(location=elt['depart']).exists():
+            pass
+        else:
+            Location.objects.create(location=elt['depart'])
+        
+        if Schedule.objects.filter(code=elt['code']).exists():
+            pass
+        else:
+                
+            Schedule.objects.create(code=elt['code'], schedule=elt['schedule'], fare=elt['fare'], bus=Bus.objects.get(bus_number=elt['bus']), depart=Location.objects.get(location=elt['depart']), destination=Location.objects.get(location=elt['depart']))
+        
+    schedules = Schedule.objects.all()
+    return render(request, 'customer_home.html', {'schedules': schedules})
+    
 
 
 
