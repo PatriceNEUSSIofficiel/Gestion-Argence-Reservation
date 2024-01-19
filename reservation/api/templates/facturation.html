@@ -69,7 +69,7 @@
     onApprove: function(data, actions) {
       return actions.order.capture().then(function(details) {
         // Insérez ici le code pour traiter le paiement réussi
-        location.href = "{% url 'reservation_detail' booking.id %}"
+        location.href = "{% url 'reservation_detail' 2 %}"
         alert('Paiement effectué avec succès !');
 
       });
