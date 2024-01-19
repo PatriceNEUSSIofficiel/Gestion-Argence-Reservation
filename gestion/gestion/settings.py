@@ -123,17 +123,12 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     ]
 
-#MEDIA
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / "media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/home' 
-LOGIN_URL = '/'
 
 ID_ENCRYPTION_KEY = b'UdhnfelTxqj3q6BbPe7H86sfQnboSBzb0irm2atoFUw='
 GOOGLE_API_KEY = "AIzaSyC_o9DCqv45LBSrHjPHX0Py0-O0Wt4PuTc"

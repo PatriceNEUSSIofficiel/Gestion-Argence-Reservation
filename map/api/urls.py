@@ -4,17 +4,13 @@ from django.conf.urls.static import static
 from . import views
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
-#
+from rest_framework.routers import DefaultRouter
 from .views import formulaire_view
 from .views import get_schedules
-
-###########################
-
-
 from django.urls import path
 from .views import reservation_detail, generate_pdf
 
-####################""
+
 urlpatterns = [
     path('redirect-admin', RedirectView.as_view(url="/admin"),name="redirect-admin"),
     path('home',views.home,name='home-page'),
@@ -29,6 +25,5 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('route', views.route, name="route"),
     path('geolocalisation', views.geolocalisation, name="geolocalisation"),
-    path('map', views.map, name="map"),
-    
+
 ]

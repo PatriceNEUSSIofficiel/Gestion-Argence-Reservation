@@ -30,6 +30,7 @@ from django.core.mail import send_mail, BadHeaderError
 from .forms import EmailForm
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from  rest_framework import viewsets
 
 context = {
     'page_title' : 'File Management System',
@@ -157,6 +158,15 @@ def register_User(request):
             context['reg_form'] = form
 
     return render(request,'register.html',context)
+
+def map(request):
+    return redirect('http://localhost:8002/geolocalisation')
+
+def route(request):
+    return redirect('http://localhost:8002/route')
+
+def gestions(request):
+    return redirect('http://localhost:8001/gestion')
 
 @login_required
 def update_profile(request):
@@ -673,7 +683,7 @@ def formulaire_view(request):
                 if not booking.pk:
                     last_booking = Booking.objects.order_by('-seats').first()
                     if last_booking:
-                        if last_booking.seats < seats_available:
+                        if last_booking.seats < 80:#seats_available
                             booking.seats = last_booking.seats + 1
                         else:
                             return HttpResponse('bus complete')
@@ -718,11 +728,20 @@ def get_schedules(request):
 ###########################################
 
 
-
 def reservation_detail(request, booking_id):
+    booking_id = int(request.path.split('/')[-2])
+    
     booking = get_object_or_404(Booking, id=booking_id)
+    
+    if request.method == 'POST':
+        if request.POST.get('accept'):
+            booking.status = 'accepted'
+            booking.save()
+        elif request.POST.get('reject'):
+            booking.status = 'rejected'
+            booking.save()
+    
     return render(request, 'reservation_detail.html', {'booking': booking})
-
 
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
@@ -774,42 +793,6 @@ def generate_pdf(request, booking_id):
 
     return response
 
-
-
-
-
-#map
-def map(request):
-    lat_a = request.GET.get("lat_a")
-    long_a = request.GET.get("long_a")
-    lat_b = request.GET.get("lat_b")
-    long_b = request.GET.get("long_b")
-    directions = Directions(
-        lat_a=lat_a,
-        long_a=long_a,
-        lat_b=lat_b,
-        long_b=long_b
-    )
-
-    context = {
-        "google_api_key": settings.GOOGLE_API_KEY,
-        "lat_a": lat_a,
-        "long_a": long_a,
-        "lat_b": lat_b,
-        "long_b": long_b,
-        "origin": f'{lat_a}, {long_a}',
-        "destination": f'{lat_b}, {long_b}',
-        "directions": directions,
-    }
-    return render(request, 'map.html', context)
-
-def route(request):
-    context = {"google_api_key": settings.GOOGLE_API_KEY}
-    return render(request, 'route.html', context)
-def geolocalisation(request):
-    context = {"google_api_key": settings.GOOGLE_API_KEY}
-    return render(request, 'geolocalisation.html', context)
-##########################################################
 
 def formulaire_paiement(request, booking_id):
     if request.method == 'POST':

@@ -13,18 +13,17 @@ from .views import reservation_detail, generate_pdf, SchedulerViewSet
 
 router = DefaultRouter()
 router.register(r'schedule',SchedulerViewSet)
+router.register(r'schedule',SchedulerViewSet)
+
 
 
 urlpatterns = [
+    path('', views.login_admin, name="login-admin"),
+    path('gestion', views.gestion, name="gestion"),
+    path('admin-register', views.register_admin, name="register-admin"),
     path('redirect-admin', RedirectView.as_view(url="/admin"),name="redirect-admin"),
     path('home',views.home,name='home-page'),
     path('costumer_home',views.schedule_list,name='schedule-list'),
-    path('login', views.login_view, name='login'),
-    path('', auth_views.LoginView.as_view(template_name="login.html", redirect_authenticated_user=True), name='login'),    
-    path('user-login', views.login_user, name="login-user"),
-    path('user-register', views.register_User, name="register-user"),
-    path('admin-login', views.login_admin, name="login-admin"),
-    path('admin-register', views.register_admin, name="register-admin"),
     path('logout',views.logoutuser,name='logout'),
     path('profile',views.profile,name='profile'),
     path('update-profile',views.update_profile,name='update-profile'),
@@ -59,10 +58,10 @@ urlpatterns = [
     path('pay_booked',views.pay_booked,name='pay-booked'),
     path('delete_booking',views.delete_booking,name='delete-booking'),
     path('find_trip',views.find_trip,name='find-trip-page'),
-    path('get_schedules/', get_schedules, name='get_schedules'),
+    path('get_schedules/', views.get_schedules, name='get_schedules'),
     path('reservation/<int:booking_id>/', reservation_detail, name='reservation_detail'),
     path('generate_pdf/<int:booking_id>/', generate_pdf, name='generate_pdf'),
-    
+
     path('api/', include(router.urls)),
     
 ]

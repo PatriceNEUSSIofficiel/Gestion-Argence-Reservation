@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.decorators import login_required
 from map.settings import MEDIA_ROOT, MEDIA_URL
 import json
+from  rest_framework import viewsets
 from .mixins import Directions
 import uuid
 from django.contrib import messages
@@ -23,7 +24,8 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 from django.utils import formats
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 context = {
     'page_title' : 'service map',
@@ -765,10 +767,11 @@ def map(request):
 def route(request):
     context = {"google_api_key": settings.GOOGLE_API_KEY}
     return render(request, 'route.html', context)
+
+@api_view(['GET'])
 def geolocalisation(request):
     context = {"google_api_key": settings.GOOGLE_API_KEY}
     return render(request, 'geolocalisation.html', context)
-##########################################################
 
 def formulaire_paiement(request, booking_id):
     if request.method == 'POST':

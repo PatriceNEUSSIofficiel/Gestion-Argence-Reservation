@@ -1,0 +1,47 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Étape de construction de Gestion 
+      - name: Build and push microservice_gestion
+        env:
+          DOCKER_USERNAME: ${{ secrets.MY_DOCKER_NAME }}
+          DOCKER_PASSWORD: ${{ secrets.MY_DOCKER_PASSWORD }}
+        run: |
+          cd gestion
+          docker build -t patricehub/microservice_gestion:latest .
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push patricehub/microservice_gestion:latest
+
+      # Étape de construction de map 
+      - name: Build and push microservice_map
+        env:
+          DOCKER_USERNAME: ${{ secrets.MY_DOCKER_NAME }}
+          DOCKER_PASSWORD: ${{ secrets.MY_DOCKER_PASSWORD }}
+        run: |
+          cd map
+          docker build -t patricehub/microservice_map:latest .
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push patricehub/microservice_map:latest
+
+      # Étape de construction reservation
+      - name: Build and push microservice_reservation
+        env:
+          DOCKER_USERNAME: ${{ secrets.MY_DOCKER_NAME }}
+          DOCKER_PASSWORD: ${{ secrets.MY_DOCKER_PASSWORD }}
+        run: |
+          cd reservation
+          docker build -t patricehub/microservice_reservation:latest .
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push patricehub/microservice_reservation:latest

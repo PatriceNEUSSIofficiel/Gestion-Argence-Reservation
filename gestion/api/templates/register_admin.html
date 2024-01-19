@@ -19,6 +19,7 @@
                 <div class="container-fluid">
                     <form id="register-admin" method="POST" action="{% url 'register-admin' %}" enctype="multipart/form-data">
                         {% csrf_token %}
+                        {% csrf_token %}
                         <div class="mdc-layout-grid">
                             <div class="mdc-layout-grid__inner">
                                 <div class="form-group mb-3">

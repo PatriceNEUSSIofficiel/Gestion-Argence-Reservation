@@ -35,7 +35,7 @@
                         <a class="nav-link" aria-current="page" href="{% url 'schedule-list' %}">Booking</a> 
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'geolocalisation' %}">geolocate</a> 
+                        <a class="nav-link" aria-current="page" href="{% url 'map' %}">geolocate</a> 
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="{% url 'route' %}">itinary</a> 
@@ -58,7 +58,7 @@
                     </li>
                     {% endif %}
                     <li class="nav-item me-3 me-lg-0">
-                        <a class="nav-link" href="{% static '/admin_login' %}">admin?</a>
+                        <a class="nav-link" href="{% static '/gestions' %}">admin?</a>
                     </li>
                     <li class="nav-item me-3 me-lg-0">
                         <a class="nav-link" href="{% url 'contact' %}">contact</a>

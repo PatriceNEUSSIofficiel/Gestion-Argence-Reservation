@@ -4,6 +4,9 @@ services:
   msgestion:
     build: 
       context: ./gestion
+    command: bash -c "python3 ./gestion/manage.py makemigrations && python3 ./gestion/manage.py migrate && python3 ./gestion/manage.py runserver 0.0.0.0:8001"
+    volumes:
+      - .:/app  
     ports:
       - "8001:8001"
     networks:
@@ -12,14 +15,20 @@ services:
   msmap:
     build: 
       context: ./map
+    command: bash -c "python3 ./map/manage.py makemigrations && python3 ./map/manage.py migrate && python3 ./map/manage.py runserver 0.0.0.0:8002"
     ports:
       - "8002:8002"
+    volumes:
+      - .:/app  
     networks:
       - npenetwork
 
   msreservation:
     build: 
       context: ./reservation
+    command: bash -c "python3 ./reservation/manage.py makemigrations && python3 ./reservation/manage.py migrate && python3 ./reservation/manage.py runserver 0.0.0.0:8003"
+    volumes:
+      - .:/app  
     ports:
       - "8003:8003"
     networks:
@@ -29,6 +38,8 @@ services:
     build: ./conf
     ports:
       - 5000:5000
+    volumes:
+      - .:/app  
     depends_on:
       - msgestion
       - msmap

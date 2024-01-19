@@ -3,7 +3,6 @@ from unicodedata import category
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from gestion.settings import MEDIA_ROOT, MEDIA_URL
 import json
 import uuid
 from .forms import LoginForm
@@ -27,16 +26,14 @@ from .models import Booking
 from django.core.exceptions import ObjectDoesNotExist
 from .serializers import ScheduleSerializers
 from  rest_framework import viewsets
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 class SchedulerViewSet(viewsets.ModelViewSet):
     
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializers
-
-
-
 
 
 context = {
@@ -47,81 +44,64 @@ context = {
 
 from django.contrib.auth.decorators import login_required
 
-@login_required(login_url='login')
-
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return render(request, 'home.html', context)
-            else:
-                form.add_error(None, "Nom d'utilisateur ou mot de passe incorrect.")
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
-
-def logout_view(request):
-    logout(request)
-    return redirect('/login')
+@login_required(login_url='/')
 
 @login_required
-def login_admin(request):
-    logout(request)
-    resp = {"status": 'failed', 'msg': ''}
-    username = ''
-    password = ''
-    if request.POST:
-        username = request.POST['username']
-        password = request.POST['password']
-
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                if user.is_superuser:
-                    login(request, user)
-                    return redirect('home-page')
-                else:
-                    login(request, user)
-                    resp['status'] = 'success'
-            else:
-                resp['msg'] = "Incorrect username or password"
-        else:
-            resp['msg'] = "Incorrect username or password"
-    return HttpResponse(json.dumps(resp), content_type='application/json')
-
-
-def login_user(request):
-    
-    logout(request)
-    resp = {"status":'failed','msg':''}
-    username = ''
-    password = ''
-    if request.POST:
-        username = request.POST['username']
-        password = request.POST['password']
-
-        user = authenticate(username=username, password=password)
-        
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                resp['status']='success'
-            else:
-                resp['msg'] = "Incorrect username or password"
-        else:
-            resp['msg'] = "Incorrect username or password"
+def register_admin(request):
+    user = request.user
+    context = {}
+    context['page_title'] = "Register User"
+    if request.method == 'POST':
+        data = request.POST
+        form = UserRegistration(data)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            pwd = form.cleaned_data.get('password1')
             
-    return render(request, 'home.html',context)
+            try:
+                # Vérifie si l'utilisateur existe déjà
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                # L'utilisateur n'existe pas, crée un nouveau superutilisateur
+                user = User.objects.create_superuser(username=username, password=pwd)
+            else:
+                # L'utilisateur existe déjà, met à jour ses droits de superutilisateur
+                user.is_superuser = True
+                user.set_password(pwd)
+                user.save()
+            
+            loginUser = authenticate(username=username, password=pwd)
+            
+            login(request, loginUser)
 
-#Logout
+            return redirect('home-page')
+        else:
+            context['reg_form'] = form
+    return render(request, 'register_admin.html', context)
+
+def login_admin(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active and user.is_superuser:
+                login(request, user)
+                return redirect('home-page')
+            else:
+                messages.error(request, "Vous n'êtes pas autorisé à accéder à cette page.")
+        else:
+            messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
+
+    return render(request, 'login.html', context)
 
 def logoutuser(request):
     logout(request)
+    return redirect('/')
+
+@api_view(['GET'])
+def gestion(request):
     return redirect('/')
 
 @login_required
@@ -138,26 +118,32 @@ def register_admin(request):
     user = request.user
     context = {}
     context['page_title'] = "Register User"
-    
     if request.method == 'POST':
         data = request.POST
         form = UserRegistration(data)
         if form.is_valid():
-            form.save()
             username = form.cleaned_data.get('username')
             pwd = form.cleaned_data.get('password1')
             
-            # Create superuser
-            User.objects.create_superuser(username=username, password=pwd, email='')
+            try:
+                # Vérifie si l'utilisateur existe déjà
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                # L'utilisateur n'existe pas, crée un nouveau superutilisateur
+                user = User.objects.create_superuser(username=username, password=pwd)
+            else:
+                # L'utilisateur existe déjà, met à jour ses droits de superutilisateur
+                user.is_superuser = True
+                user.set_password(pwd)
+                user.save()
             
             loginUser = authenticate(username=username, password=pwd)
             
             login(request, loginUser)
-            
-            return redirect('welcome-page')
+
+            return redirect('home-page')
         else:
             context['reg_form'] = form
-
     return render(request, 'register_admin.html', context)
 
 login_required
@@ -684,6 +670,7 @@ def formulaire_view(request):
     return render(request, 'formulaire2.html')
 
 @login_required
+
 def get_schedules(request):
     schedules = Schedule.objects.all()
     data = [

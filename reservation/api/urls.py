@@ -2,12 +2,16 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from . import views
+from rest_framework.routers import DefaultRouter
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
 from .views import formulaire_view
 from .views import get_schedules
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 from .views import reservation_detail, generate_pdf
+
+
 urlpatterns = [
     path('redirect-admin', RedirectView.as_view(url="/admin"),name="redirect-admin"),
     path('',views.init,name='init-page'),
@@ -29,9 +33,15 @@ urlpatterns = [
     path('find_trip',views.find_trip,name='find-trip-page'),
     path('formulaire2/', formulaire_view, name='formulaire2'),
     path('get_schedules/', get_schedules, name='get_schedules'),
-    path('reservation/<int:booking_id>/', reservation_detail, name='reservation_detail'),
+    path('reservation_detail/<int:booking_id>/', views.reservation_detail, name='reservation_detail'),    
     path('generate_pdf/<int:booking_id>/', generate_pdf, name='generate_pdf'),
     path('contact/', views.send_email, name='contact'),
-    path('formulaire_paiement/<int:booking_id>/', views.formulaire_paiement, name='formulaire_paiement')
+    path('formulaire_paiement/<int:booking_id>/', views.formulaire_paiement, name='formulaire_paiement'),
+    path('map/', views.map, name='map'),
+    path('gestions/', views.gestions, name='gestions'),
+    path('route/', views.route, name='route'),
+
+
+
     
 ]

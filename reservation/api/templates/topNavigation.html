@@ -36,10 +36,13 @@
                     {% if user.id %}
                    
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'welcome-page' %}">Home</a>
+                        <a class="nav-link" aria-current="page" href="{% url 'schedule-list' %}">Booking</a> 
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'schedule-list' %}">Reservation</a>
+                        <a class="nav-link" aria-current="page" href="{% url 'map' %}">geolocate</a> 
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'route' %}">itinary</a> 
                     </li>
     
                     {% endif %}
@@ -59,7 +62,9 @@
                         <a class="nav-link" href="{% url 'register-user' %}">sign up</a>
                     </li>
                     {% endif %}
-                   
+                    <li class="nav-item me-3 me-lg-0">
+                        <a class="nav-link" href="{% url 'gestions' %}">admin?</a>
+                    </li>
                     <li class="nav-item me-3 me-lg-0">
                         <a class="nav-link" href="{% url 'contact' %}">contact</a>
                     </li>
