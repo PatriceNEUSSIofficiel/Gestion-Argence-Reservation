@@ -3,7 +3,7 @@ from unicodedata import category
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-import json
+import json, requests
 import uuid
 from .forms import LoginForm
 from django.contrib import messages
@@ -28,8 +28,11 @@ from .serializers import ScheduleSerializers
 from  rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-
+from reportlab.pdfgen import canvas
+from django.shortcuts import get_object_or_404
+from django.http import FileResponse
+from django.conf import settings
+import os
 class SchedulerViewSet(viewsets.ModelViewSet):
     
     queryset = Schedule.objects.all()
@@ -551,14 +554,46 @@ def save_booking(request):
         resp['msg'] = 'No data has been sent.'
     return HttpResponse(json.dumps(resp), content_type = 'application/json')
 
-login_required
+# login_required
+# def bookings(request):
+#     context['page_title'] = "Bookings"
+    
+    
+    
+    
+#     bookings = Booking.objects.all()
+#     context['bookings'] = bookings
+
+#     return render(request, 'bookings.html', context)
+@login_required
 def bookings(request):
-    context['page_title'] = "Bookings"
-    bookings = Booking.objects.all()
-    context['bookings'] = bookings
-
-    return render(request, 'bookings.html', context)
-
+    try:
+        url = 'http://msreservation:8003/api/Booking/'
+        
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            dataToSave = response.json()
+            
+            for elt in dataToSave:
+                booking = Booking.objects.create(
+                    id=elt['id'],
+                    code=elt['code'],
+                    name=elt['name'],
+                    seats=elt['seats'],
+                    status=elt['status']
+                )
+                
+                schedule_id = elt['schedule']
+                schedule_location = Location.objects.get(id=schedule_id)
+                booking.schedule = schedule_location
+                booking.save()
+                
+            bookings = Booking.objects.all()
+            return render(request, 'bookings.html', {'bookings': bookings})
+    except ConnectionError:
+        pass
+    return render(request, 'error.html')
 
 @login_required
 def view_booking(request,pk=None):
@@ -685,31 +720,49 @@ def get_schedules(request):
     ]
     return JsonResponse(data, safe=False)
 
-login_required
+@login_required
 def reservation_detail(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     return render(request, 'reservation_detail.html', {'booking': booking})
-login_required
+
+@login_required
+def download_pdf(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    # Replace 'pdfs' with the actual directory where you store your PDFs
+    pdf_directory = 'pdfs'
+    pdf_path = os.path.join(settings.BASE_DIR, pdf_directory, f'reservation_{booking.code}.pdf')
+
+    # Make sure the file exists before trying to serve it
+    if os.path.exists(pdf_path):
+        with open(pdf_path, 'rb') as pdf_file:
+            response = FileResponse(pdf_file, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename=reservation_{booking.code}.pdf'
+            return response
+
+    else:
+        # Handle the case when the file doesn't exist
+        print(f"pdf_path: {booking}")
+
+        return HttpResponse("PDF not found", status=404)
+
+
+@login_required
 def generate_pdf(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
 
-    # Générer le PDF avec les informations de réservation
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'filename=reservation_{booking.code}.pdf'
 
     p = canvas.Canvas(response)
-    
 
-    # Définir le style du PDF
-    p.setStrokeColorRGB(0, 0, 1)  # Couleur de la bordure en bleu
-    p.setFillColorRGB(0.9, 0.9, 1)  # Couleur de fond en bleu clair
+    p.setStrokeColorRGB(0, 0, 1)
+    p.setFillColorRGB(0.9, 0.9, 1)
     p.roundRect(50, 200, 500, 300, 20, fill=1)
 
-    # Ajouter les informations de réservation dans le PDF
     p.setFont("Helvetica", 12)
-    p.setFillColorRGB(0, 0, 0)  # Couleur du texte en noir
+    p.setFillColorRGB(0, 0, 0)
 
-    # Calculer la position du texte centré
     text_width = p.stringWidth(f"Ticket ", "Helvetica", 12)
     x_position = (550 - text_width) / 2
 
@@ -721,8 +774,6 @@ def generate_pdf(request, booking_id):
     p.drawString(100, 375, f"Horaire: {horaire_str}")    
     p.drawString(100, 350, f"Bus number: {booking.schedule.bus.bus_number}")
     
-
-
     p.drawString(100, 325, f"Bus Category: {booking.schedule.bus.category}")
     p.drawString(100, 300, f"Seat number: {booking.seats}")
     p.drawString(100, 275, f"trajet: {booking.schedule.depart}-{booking.schedule.destination}")
@@ -730,8 +781,18 @@ def generate_pdf(request, booking_id):
     p.drawString(100, 250, f"Amount Payable: {intcomma(booking.schedule.fare)}")
     p.drawString(100, 225, f"Statut: {'Pending' if booking.status == '1' else 'Paid'}")
 
+    # Ajoutez le bouton de téléchargement
+    p.setFont("Helvetica-Bold", 12)
+    p.setFillColorRGB(0, 0, 1)  # Couleur bleue pour le lien
+    # p.drawString(100, 50, "Télécharger")
+    # p.linkURL(reverse('download_pdf', args=[booking.id]), (100, 50, 200, 65))
 
-    # Ajoutez d'autres informations...
+    # Ajoutez le bouton de retour
+    p.setFont("Helvetica-Bold", 12)
+    p.setFillColorRGB(0, 0, 1)  # Couleur bleue pour le lien
+    p.drawString(300, 50, "Retour")
+    p.linkURL(reverse('booking-page'), (300, 50, 400, 65))
+
     p.showPage()
     p.save()
 

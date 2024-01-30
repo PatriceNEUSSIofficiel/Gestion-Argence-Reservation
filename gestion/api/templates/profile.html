@@ -1,4 +1,12 @@
-{% extends 'base.html' %} {% block pageContent%}
+{% extends 'base.html' %} 
+{% load customfilter %} {% load humanize %}
+
+{% block pageContent%}
+<style>
+    #uni_modal .modal-footer {
+        display: none;
+    }
+</style>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-7 col-md-10 col-sm-12 col-xs-12">
@@ -26,10 +34,13 @@
                     <div class="d-flex w-100 text-end justify-content-end">
                         <a href="{% url 'update-password' %}" class="btn btn btn-light border btn-sm bg-gradient rounded-0 me-2">Update Password</a>
                         <a href="{% url 'update-profile' %}" class="btn btn btn-primary btn-sm bg-gradient rounded-0">Update Profile</a>
+                        <button class="btn btn-default border bg-gradient rounded-0 btn-sm" type="button" data-bs-dismiss="modal" ><a class="nav-link" aria-current="page" href="{% url 'booking-page' %}">Close</a> 
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock pageContent%}

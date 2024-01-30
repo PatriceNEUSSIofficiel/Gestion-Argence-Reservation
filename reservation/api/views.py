@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from reservation.settings import MEDIA_ROOT, MEDIA_URL
 import json, requests
 import uuid
+from requests.exceptions import ConnectionError
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render,reverse
@@ -31,11 +32,17 @@ from .forms import EmailForm
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from  rest_framework import viewsets
+from django.contrib.auth.decorators import login_required
+from .serializers import BookingSerializers
 
 context = {
     'page_title' : 'File Management System',
 }
 
+class BookingViewSet(viewsets.ModelViewSet):
+    
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializers
 
 def init(request):
     return render(request, 'init.html', context)
@@ -46,7 +53,6 @@ def welcome(request):
 
 #login
 
-from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='login')
 
@@ -458,38 +464,39 @@ def manage_schedule(request, pk=None):
 
     return render(request, 'manage_schedule.html', context)
 
-
-import json
-
 def schedule_list(request):
-
-
-    url = 'http://msgestion:8001/api/schedule/'
-    
-    reponse = requests.get(url)
-    print("Response ==> ",reponse)
-    dataToSave = reponse.json() 
-    print('------------------------')
-    print(dataToSave)
-    print(".......................")
-    for elt in dataToSave:
-        if Bus.objects.filter(bus_number=elt['bus']).exists():
-            pass
-        else:
-            Bus.objects.create(bus_number=elt['bus'], status=elt['status'])
-        if Location.objects.filter(location=elt['depart']).exists():
-            pass
-        else:
-            Location.objects.create(location=elt['depart'])
+    try:
+        url = 'http://msgestion:8001/api/schedule/'
         
-        if Schedule.objects.filter(code=elt['code']).exists():
-            pass
-        else:
+        reponse = requests.get(url)
+        
+        if reponse.status_code == 200:
+            print("Response ==> ", reponse)
+            dataToSave = reponse.json() 
+            print('------------------------')
+            print(dataToSave)
+            print(".......................")
+            for elt in dataToSave:
+                if Bus.objects.filter(bus_number=elt['bus']).exists():
+                    pass
+                else:
+                    Bus.objects.create(bus_number=elt['bus'], status=elt['status'])
+                if Location.objects.filter(location=elt['depart']).exists():
+                    pass
+                else:
+                    Location.objects.create(location=elt['depart'])
                 
-            Schedule.objects.create(code=elt['code'], schedule=elt['schedule'], fare=elt['fare'], bus=Bus.objects.get(bus_number=elt['bus']), depart=Location.objects.get(location=elt['depart']), destination=Location.objects.get(location=elt['depart']))
+                if Schedule.objects.filter(code=elt['code']).exists():
+                    pass
+                else:
+                    Schedule.objects.create(code=elt['code'], schedule=elt['schedule'], fare=elt['fare'], bus=Bus.objects.get(bus_number=elt['bus']), depart=Location.objects.get(location=elt['depart']), destination=Location.objects.get(location=elt['depart']))
+                
+            schedules = Schedule.objects.all()
+            return render(request, 'customer_home.html', {'schedules': schedules})
+    except ConnectionError:
+        pass
+    return render(request, 'error.html')
         
-    schedules = Schedule.objects.all()
-    return render(request, 'customer_home.html', {'schedules': schedules})
     
 
 

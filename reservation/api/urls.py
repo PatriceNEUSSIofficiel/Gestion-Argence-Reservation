@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from django.conf.urls.static import static
 from . import views
 from rest_framework.routers import DefaultRouter
@@ -9,8 +9,12 @@ from .views import formulaire_view
 from .views import get_schedules
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import reservation_detail, generate_pdf
+from .views import reservation_detail, generate_pdf, BookingViewSet
+from rest_framework.routers import DefaultRouter
 
+router = DefaultRouter()
+router.register(r'Booking',BookingViewSet)
+router.register(r'Booking',BookingViewSet)
 
 urlpatterns = [
     path('redirect-admin', RedirectView.as_view(url="/admin"),name="redirect-admin"),
@@ -40,6 +44,7 @@ urlpatterns = [
     path('map/', views.map, name='map'),
     path('gestions/', views.gestions, name='gestions'),
     path('route/', views.route, name='route'),
+    path('api/', include(router.urls)),
 
 
 

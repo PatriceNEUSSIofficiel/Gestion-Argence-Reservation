@@ -61,7 +61,7 @@ urlpatterns = [
     path('get_schedules/', views.get_schedules, name='get_schedules'),
     path('reservation/<int:booking_id>/', reservation_detail, name='reservation_detail'),
     path('generate_pdf/<int:booking_id>/', generate_pdf, name='generate_pdf'),
-
+    path('download_pdf/<int:booking_id>/', views.download_pdf, name='download_pdf'),
     path('api/', include(router.urls)),
     
 ]

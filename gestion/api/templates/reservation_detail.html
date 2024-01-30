@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+{% load humanize %}
+
+{% block pageContent%}
+ 
+<style>
+    body {
+        padding: 20px;
+    }
+
+    .center-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .ticket-container {
+        width: 60%;
+        border: 2px solid #007bff;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    h1 {
+        color: #007bff;
+        text-align: center;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+
+    .ipcon {
+        width:200px;
+        height:150px;
+        margin-left: 250px;
+
+    }
+
+    /* Style pour le bouton Générer PDF */
+    .generate-pdf-btn {
+        margin-top: 20px;
+        text-align: center;
+    }
+</style>
+    <div class="center-container">
+        <div class="ticket-container">
+            <div class="col-md-6">
+                <img class="ipcon" src="{% static 'assets/default/media/l.png' %}" alt="" id="logo-img" >
+            
+                <div class="form-group">
+                    <label for="name">Nom:</label>
+                    <span>{{ booking.name }}</span>
+                </div>
+                <br>
+
+                <div class="form-group">
+                    <label for="schedule">Horaire:</label>
+                    <span>{{ booking.schedule.schedule|date:"Y-m-d h:i A" }}</span>
+                </div>
+
+                                    <br>
+
+                <div class="form-group">
+                    <label for="bus">Bus number:</label>
+                    <span>{{ booking.schedule.bus.bus_number }}</span>
+                </div>
+                                    <br>
+
+                <div class="form-group">
+                    <label for="category">Bus Category:</label>
+                    <span>{{ booking.schedule.bus.category }}</span>
+                </div>
+
+                                    <br>
+
+                <div class="form-group">
+                    <label for="seats">Seat number:</label>
+                    <span>{{ booking.seats }}</span>
+                   
+
+
+                </div>
+
+                                    <br>
+
+                <div class="form-group">
+                    <label for="fare"> Amount Payable:</label>
+                    <span>{{ booking.schedule.fare|intcomma }}</span>
+                </div>
+
+                                    <br>
+
+
+             <div class="form-group">
+                      <label for="target">trajet : </label>
+                     <span>{{ booking.schedule.depart }}-{{ booking.schedule.destination }} - </span>
+             </div>            
+             
+             <br>
+
+                <div class="form-group">
+                    <label for="status">Statut: </label>
+                    {% if booking.status == '1' %}
+                        <span class=" badge-primary">paid</span>
+                    {% else %}
+                        <span class=" badge-success">Pending</span>
+                    {% endif %}
+                </div>
+                <div class="generate-pdf-btn", style="margin-left: 80%;">
+                    <!-- Bouton pour générer le PDF -->
+
+                    {% comment %} <form method="post" action="{% url 'generate_pdf' booking.id %}" target="_blank">
+                        {% csrf_token %}
+                        <button class="btn btn-primary" type="submit">Générer PDF</button>
+                    </form>  {% endcomment %}
+
+                    <form method="post" action="{% url 'generate_pdf' booking.id %}" target="_blank">
+                        {% csrf_token %}
+                        
+                        <!-- Ajoutez des champs de formulaire cachés pour inclure toutes les informations nécessaires -->
+                        <input type="hidden" name="name" value="{{ booking.name }}">
+                        <input type="hidden" name="schedule" value="{{ booking.schedule.schedule|date:"Y-m-d h:i A" }}">
+                        <input type="hidden" name="bus_number" value="{{ booking.schedule.bus.bus_number }}">
+                        <!-- Ajoutez d'autres champs ici... -->
+                    
+                        <button class="btn btn-primary" type="submit">Générer PDF</button>
+                        <button class="btn btn-default border bg-gradient rounded-0 btn-sm" type="button" data-bs-dismiss="modal" ><a class="nav-link" aria-current="page" href="{% url 'booking-page' %}">Close</a> 
+                    </form>
+                </div>
+            </br></br></br>
+            </div>
+        </div>
+    </div>
+</br></br></br>
+    {% endblock pageContent%}
+
